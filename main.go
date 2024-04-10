@@ -39,5 +39,8 @@ func main() {
 	//CREATE USERS
 	controller.Register(e, db)
 
+	//LOGIN USERS
+	controller.Login(e, db)
+
 	e.Start(":8080")
 }
