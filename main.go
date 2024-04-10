@@ -36,5 +36,8 @@ func main() {
 	//GET TODOS
 	controller.GetTodos(e, db)
 
+	//CREATE USERS
+	controller.Register(e, db)
+
 	e.Start(":8080")
 }
