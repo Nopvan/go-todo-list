@@ -14,7 +14,7 @@ type CheckRequest struct {
 
 func CheckTodos(e *echo.Echo, db *sql.DB) {
 
-	e.PATCH("/todos/:id/check", func(ctx echo.Context) error {
+	e.PUT("/todos/:id/check", func(ctx echo.Context) error {
 		id := ctx.Param("id")
 
 		var request CheckRequest
