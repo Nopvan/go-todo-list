@@ -42,5 +42,11 @@ func main() {
 	//LOGIN USERS
 	controller.Login(e, db)
 
+	//CREATE SCOPES
+	controller.CreateScopes(e, db)
+
+	//DELETE SCOPES
+	controller.DeleteScopes(e, db)
+
 	e.Start(":8080")
 }
