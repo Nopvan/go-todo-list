@@ -4,6 +4,8 @@ import (
 	"go-todo-list/controller"
 	"go-todo-list/database"
 
+	"go-todo-list/middleware"
+
 	"github.com/labstack/echo"
 )
 
@@ -17,6 +19,8 @@ func main() {
 	}
 
 	e := echo.New()
+
+	e.Use(middleware.AuthMiddleware)
 
 	//CREATE TODOS
 	controller.CreateTodos(e, db)
@@ -48,5 +52,9 @@ func main() {
 	//DELETE SCOPES
 	controller.DeleteScopes(e, db)
 
+	//ASSIGN SCOPES TO USER
+	controller.AssignScope(e, db)
+
+	//RUN IN PORT 8080
 	e.Start(":8080")
 }
