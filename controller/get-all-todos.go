@@ -2,6 +2,7 @@ package controller
 
 import (
 	"database/sql"
+	"go-todo-list/models"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -17,7 +18,11 @@ type TodoResponse struct {
 func GetAllTodos(e *echo.Echo, db *sql.DB) {
 
 	e.GET("/todos", func(ctx echo.Context) error {
-		rows, err := db.Query("SELECT * FROM todos")
+
+		//untuk set hanya user id yang cocok saja yang di tampilkan
+		user := ctx.Get("USER").(models.AuthClaimJWT)
+
+		rows, err := db.Query("SELECT id, title, description, done FROM todos WHERE user_id = ?", user.UserId)
 		if err != nil {
 			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
@@ -44,6 +49,11 @@ func GetAllTodos(e *echo.Echo, db *sql.DB) {
 
 			res = append(res, todo)
 		}
+
+		if len(res) == 0 {
+			return ctx.JSON(http.StatusOK, map[string]string{"message": "to do not found"})
+		}
+
 		return ctx.JSON(http.StatusOK, res)
 	})
 }

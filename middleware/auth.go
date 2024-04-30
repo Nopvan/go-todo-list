@@ -11,6 +11,12 @@ import (
 
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+
+		//untuk whitelist / mengecualikan path register dan login dari middleware
+		if ctx.Path() == "/auth/register" || ctx.Path() == "/auth/login" {
+			return next(ctx)
+		}
+
 		authHeader := ctx.Request().Header.Get("Authorization")
 		if authHeader == "" {
 			return ctx.String(http.StatusUnauthorized, "token is empty")
