@@ -3,6 +3,7 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"go-todo-list/models"
 	"net/http"
 
@@ -20,6 +21,21 @@ func CreateTodos(e *echo.Echo, db *sql.DB) {
 
 		//untuk input user_id di todos
 		user := ctx.Get("USER").(models.AuthClaimJWT)
+
+		fmt.Println(user.UserScopes)
+
+		//set permission untuk user
+		permissionFound := false
+		for _, scope := range user.UserScopes {
+			if scope == "todos:create" {
+				permissionFound = true
+				break
+			}
+		}
+
+		if !permissionFound {
+			return ctx.String(http.StatusForbidden, "Forbidden")
+		}
 
 		var request CreateRequest
 		json.NewDecoder(ctx.Request().Body).Decode(&request)

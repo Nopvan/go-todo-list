@@ -48,6 +48,25 @@ func Login(e *echo.Echo, db *sql.DB) {
 			return ctx.String(http.StatusInternalServerError, err.Error())
 		}
 
+		//query buat ambil data scopes per user filtered by email
+		rows, err := db.Query(
+			"SELECT scopes.name as scope_name FROM users LEFT JOIN user_scopes ON user_scopes.user_id = users.id JOIN scopes ON scopes.id = user_scopes.scope_id WHERE email = ?",
+			retrivedEmail,
+		)
+
+		//iterasi menggunakan method next jadi kalau barisnya sudah habis otomatis iterasinya berhenti
+		var scopes []string = make([]string, 0) //0 biar anti array
+		for rows.Next() {
+			var scope string
+
+			rows.Scan(&scope)
+			if err != nil {
+				return ctx.String(http.StatusInternalServerError, err.Error())
+			}
+			//push data ke array menggunakan append
+			scopes = append(scopes, scope)
+		}
+
 		//untuk compare password yang sudah di hash di database dengan password yang di inputkan / request dengan method CompareHashAndPassword
 		err = bcrypt.CompareHashAndPassword([]byte(retrivedPassword), []byte(request.Password))
 		if err != nil {
@@ -56,9 +75,10 @@ func Login(e *echo.Echo, db *sql.DB) {
 
 		//diambil dari struct authclaimjwt dan isi data datanya pake data yang diambil dari database
 		tokenClaim := models.AuthClaimJWT{
-			UserId:    retrivedId,
-			UserName:  retrivedName,
-			UserEmail: retrivedEmail,
+			UserId:     retrivedId,
+			UserName:   retrivedName,
+			UserEmail:  retrivedEmail,
+			UserScopes: scopes,
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaim)

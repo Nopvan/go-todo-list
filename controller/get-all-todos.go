@@ -22,6 +22,19 @@ func GetAllTodos(e *echo.Echo, db *sql.DB) {
 		//untuk set hanya user id yang cocok saja yang di tampilkan
 		user := ctx.Get("USER").(models.AuthClaimJWT)
 
+		//set permission untuk user
+		permissionFound := false
+		for _, scope := range user.UserScopes {
+			if scope == "todos:read" {
+				permissionFound = true
+				break
+			}
+		}
+
+		if !permissionFound {
+			return ctx.String(http.StatusForbidden, "Forbidden")
+		}
+
 		rows, err := db.Query("SELECT id, title, description, done FROM todos WHERE user_id = ?", user.UserId)
 		if err != nil {
 			return ctx.String(http.StatusInternalServerError, err.Error())

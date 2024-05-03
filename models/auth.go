@@ -9,4 +9,6 @@ type AuthClaimJWT struct {
 	UserId    int    `json:"user_id"`
 	UserName  string `json:"user_name"`
 	UserEmail string `json:"user_email"`
+	//embed scopesnya ke dalam JWT
+	UserScopes []string `json:"user_scopes"`
 }
