@@ -2,7 +2,7 @@
 To Do List using the Echo Framework by implementing Authentication and Authorization using Java With Token
 
 ## Documentation
-This API have some endpoint
+This API have some endpoint using Java With Token 
 1. Endpoint Register User 
 
 ```php
